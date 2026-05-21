@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <style>
-         div {
+
+        div {
             border: 1px solid black;
         }
 
@@ -13,18 +14,20 @@
             width: 100px;
             height: 100px;
         }
-
+    
         .child{
-            /*vw, vh 기준은  document(브라우저 화면) */
-            width: 50vw;
-            height: 100vh;
+            width: 50%;
+            height: 100%;
         }
-
     </style>
 </head>
 <body>
     <div class="outline">
+        <!-- 부모 div 의 width, height 대비 % 적용  -->
         <div class="child">자식</div>
     </div>
+    <!-- height 영역이 이미 100% 라서 커지지 않는다. -->
+    <div class="child">외부</div>
+
 </body>
 </html>
