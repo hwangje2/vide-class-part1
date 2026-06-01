@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WeatherNow</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;700&family=Inter:wght@400;500&display=swap" rel="stylesheet" />
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #FFFFFF;
+      color: #1A1A1A;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 1440px;
+      display: flex;
+      flex-direction: column;
+      padding: 32px 80px;
+      gap: 32px;
+    }
+
+    /* ── Hero ── */
+    .hero-card {
+      background: #0A0A0A;
+      border-radius: 16px;
+      padding: 56px 60px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 24px;
+    }
+
+    .brand-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #888888;
+      font-family: 'Geist', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .brand-row i { width: 20px; height: 20px; color: #4A9FD8; }
+
+    .hero-heading {
+      font-family: 'Geist', sans-serif;
+      font-size: 44px;
+      font-weight: 600;
+      color: #FFFFFF;
+      text-align: center;
+    }
+
+    .hero-subtitle {
+      font-family: 'Inter', sans-serif;
+      font-size: 16px;
+      font-weight: 400;
+      color: #888888;
+      text-align: center;
+    }
+
+    .search-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .search-input-wrapper {
+      position: relative;
+      width: 360px;
+    }
+
+    .search-input-wrapper i {
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 18px;
+      height: 18px;
+      color: #888888;
+      pointer-events: none;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 14px 20px 14px 46px;
+      background: #1A1A1A;
+      color: #FFFFFF;
+      border: 1px solid #2A2A2A;
+      border-radius: 9999px;
+      font-family: 'Inter', sans-serif;
+      font-size: 15px;
+      outline: none;
+      transition: outline 0.15s;
+    }
+
+    .search-input::placeholder { color: #888888; }
+    .search-input:focus { outline: 2px solid #4A9FD8; outline-offset: 0; }
+
+    .search-btn {
+      padding: 14px 28px;
+      background: #4A9FD8;
+      color: #FFFFFF;
+      border: none;
+      border-radius: 9999px;
+      font-family: 'Inter', sans-serif;
+      font-size: 15px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: opacity 0.15s;
+      white-space: nowrap;
+    }
+
+    .search-btn:hover { opacity: 0.88; }
+    .search-btn:disabled { opacity: 0.65; cursor: not-allowed; }
+
+    .error-msg {
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      color: #EF4444;
+      margin-top: -12px;
+      text-align: center;
+      display: none;
+    }
+
+    /* ── Bottom Section ── */
+    .bottom-section {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    #weather-result {
+      display: none;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    /* ── Current Weather Card ── */
+    .current-weather-card {
+      background: #F7F8FA;
+      border-radius: 16px;
+      padding: 32px 40px;
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      align-items: center;
+      gap: 40px;
+    }
+
+    .city-info {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .city-name {
+      font-family: 'Geist', sans-serif;
+      font-size: 28px;
+      font-weight: 700;
+      color: #1A1A1A;
+    }
+
+    .weather-desc {
+      font-family: 'Inter', sans-serif;
+      font-size: 16px;
+      color: #666666;
+    }
+
+    .weather-date {
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      color: #888888;
+    }
+
+    .temp-block {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .temp-block i { width: 48px; height: 48px; color: #4A9FD8; }
+
+    .temperature {
+      font-family: 'Geist Mono', monospace;
+      font-size: 64px;
+      font-weight: 700;
+      color: #1A1A1A;
+      line-height: 1;
+    }
+
+    /* ── Stats Row ── */
+    .stats-row {
+      display: flex;
+      flex-direction: row;
+      gap: 12px;
+    }
+
+    .stat-card {
+      flex: 1;
+      background: #F7F8FA;
+      border-radius: 12px;
+      padding: 20px 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .stat-card i { width: 22px; height: 22px; color: #4A9FD8; }
+
+    .stat-label {
+      font-family: 'Inter', sans-serif;
+      font-size: 12px;
+      color: #888888;
+    }
+
+    .stat-value {
+      font-family: 'Geist Mono', monospace;
+      font-size: 18px;
+      font-weight: 700;
+      color: #1A1A1A;
+    }
+
+    /* ── Details Title ── */
+    .details-title {
+      font-family: 'Geist', sans-serif;
+      font-size: 20px;
+      font-weight: 600;
+      color: #1A1A1A;
+    }
+
+    /* ── Bento Grid ── */
+    .bento-grid {
+      display: flex;
+      flex-direction: row;
+      gap: 16px;
+    }
+
+    .bento-col {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .bento-card {
+      background: #F7F8FA;
+      border-radius: 16px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .bento-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .bento-header i { width: 18px; height: 18px; color: #4A9FD8; }
+
+    .bento-label {
+      font-family: 'Inter', sans-serif;
+      font-size: 12px;
+      color: #888888;
+    }
+
+    .bento-value {
+      font-family: 'Geist Mono', monospace;
+      font-size: 32px;
+      font-weight: 700;
+      color: #1A1A1A;
+    }
+
+    .uv-level {
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      color: #666666;
+      margin-top: 4px;
+    }
+
+    .progress-bar-bg {
+      background: #E5E7EB;
+      height: 8px;
+      border-radius: 9999px;
+      overflow: hidden;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background: #4A9FD8;
+      border-radius: 9999px;
+      width: 0%;
+      transition: width 0.5s ease;
+    }
+
+    /* ── Sunrise / Sunset ── */
+    .sun-times {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .sun-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .sun-item i { width: 24px; height: 24px; color: #4A9FD8; }
+
+    .sun-time {
+      font-family: 'Geist Mono', monospace;
+      font-size: 24px;
+      font-weight: 700;
+      color: #1A1A1A;
+    }
+
+    .sun-label {
+      font-family: 'Inter', sans-serif;
+      font-size: 12px;
+      color: #888888;
+    }
+
+    /* ── Footer ── */
+    .footer {
+      font-family: 'Inter', sans-serif;
+      font-size: 12px;
+      color: #888888;
+      text-align: center;
+      padding: 8px 0 16px;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 768px) {
+      .app { padding: 24px; }
+      .stats-row { display: grid; grid-template-columns: 1fr 1fr; }
+      .bento-grid { flex-direction: column; }
+    }
+
+    @media (max-width: 480px) {
+      .hero-card { padding: 32px 24px; }
+      .hero-heading { font-size: 28px; }
+      .temperature { font-size: 40px; }
+      .search-row { flex-direction: column; width: 100%; }
+      .search-input-wrapper { width: 100%; }
+      .search-btn { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <!-- Top Section -->
+    <div class="top-section">
+      <div class="hero-card">
+        <div class="brand-row">
+          <i data-lucide="sun"></i>
+          <span>WeatherNow</span>
+        </div>
+        <h1 class="hero-heading">Search Your Weather</h1>
+        <p class="hero-subtitle">Enter a city name to get real-time weather information</p>
+        <div class="search-row">
+          <div class="search-input-wrapper">
+            <i data-lucide="search"></i>
+            <input
+              type="text"
+              class="search-input"
+              id="city-input"
+              placeholder="Enter city name..."
+              autocomplete="off"
+            />
+          </div>
+          <button class="search-btn" id="search-btn">Search</button>
+        </div>
+        <p class="error-msg" id="error-msg"></p>
+      </div>
+    </div>
+
+    <!-- Bottom Section -->
+    <div class="bottom-section">
+      <div id="weather-result">
+
+        <!-- Current Weather Card -->
+        <div class="current-weather-card">
+          <div class="city-info">
+            <span class="city-name" id="city-name"></span>
+            <span class="weather-desc" id="weather-desc"></span>
+            <span class="weather-date" id="weather-date"></span>
+          </div>
+          <div class="temp-block">
+            <i id="weather-icon" data-lucide="sun"></i>
+            <span class="temperature" id="temperature"></span>
+          </div>
+        </div>
+
+        <!-- Stats Row -->
+        <div class="stats-row">
+          <div class="stat-card">
+            <i data-lucide="thermometer"></i>
+            <span class="stat-label">Feels Like</span>
+            <span class="stat-value" id="feels-like"></span>
+          </div>
+          <div class="stat-card">
+            <i data-lucide="droplets"></i>
+            <span class="stat-label">Humidity</span>
+            <span class="stat-value" id="humidity"></span>
+          </div>
+          <div class="stat-card">
+            <i data-lucide="wind"></i>
+            <span class="stat-label">Wind</span>
+            <span class="stat-value" id="wind-speed"></span>
+          </div>
+          <div class="stat-card">
+            <i data-lucide="gauge"></i>
+            <span class="stat-label">Pressure</span>
+            <span class="stat-value" id="pressure"></span>
+          </div>
+        </div>
+
+        <!-- Details Title -->
+        <h2 class="details-title">Weather Details</h2>
+
+        <!-- Bento Grid -->
+        <div class="bento-grid">
+          <!-- Left Column -->
+          <div class="bento-col">
+            <div class="bento-card">
+              <div class="bento-header">
+                <i data-lucide="sun"></i>
+                <span class="bento-label">UV Index</span>
+              </div>
+              <div>
+                <div class="bento-value" id="uv-value">--</div>
+                <div class="uv-level" id="uv-level">Not available</div>
+              </div>
+              <div class="progress-bar-bg">
+                <div class="progress-bar-fill" id="uv-progress"></div>
+              </div>
+            </div>
+            <div class="bento-card">
+              <div class="bento-header">
+                <i data-lucide="eye"></i>
+                <span class="bento-label">Visibility</span>
+              </div>
+              <div class="bento-value" id="visibility"></div>
+            </div>
+          </div>
+
+          <!-- Right Column -->
+          <div class="bento-col">
+            <div class="bento-card">
+              <div class="bento-header">
+                <i data-lucide="sunrise"></i>
+                <span class="bento-label">Sunrise &amp; Sunset</span>
+              </div>
+              <div class="sun-times">
+                <div class="sun-item">
+                  <i data-lucide="sunrise"></i>
+                  <span class="sun-time" id="sunrise-time"></span>
+                  <span class="sun-label">Sunrise</span>
+                </div>
+                <div class="sun-item">
+                  <i data-lucide="sunset"></i>
+                  <span class="sun-time" id="sunset-time"></span>
+                  <span class="sun-label">Sunset</span>
+                </div>
+              </div>
+            </div>
+            <div class="bento-card">
+              <div class="bento-header">
+                <i data-lucide="thermometer"></i>
+                <span class="bento-label">Dew Point</span>
+              </div>
+              <div class="bento-value" id="dew-point"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <footer class="footer">
+        Powered by OpenWeatherMap API · © 2026 WeatherNow
+      </footer>
+    </div>
+  </div>
+
+  <script>
+    lucide.createIcons();
+
+    const API_KEY = '003ab7a6d3aeacc1f69c2b44b65b424e';
+    const BASE_URL = 'https://api.openweathermap.org/data/2.5/weather';
+
+    const cityInput   = document.getElementById('city-input');
+    const searchBtn   = document.getElementById('search-btn');
+    const errorMsg    = document.getElementById('error-msg');
+    const weatherResult = document.getElementById('weather-result');
+
+    function getWeatherIcon(code) {
+      if (code >= 200 && code <= 299) return 'cloud-lightning';
+      if (code >= 300 && code <= 499) return 'cloud-drizzle';
+      if (code >= 500 && code <= 599) return 'cloud-rain';
+      if (code >= 600 && code <= 699) return 'cloud-snow';
+      if (code >= 700 && code <= 799) return 'wind';
+      if (code === 800)               return 'sun';
+      if (code >= 801 && code <= 804) return 'cloud-sun';
+      return 'sun';
+    }
+
+    function formatUnixTime(unix, tzOffsetSec) {
+      const d = new Date((unix + tzOffsetSec) * 1000);
+      const h = String(d.getUTCHours()).padStart(2, '0');
+      const m = String(d.getUTCMinutes()).padStart(2, '0');
+      return `${h}:${m}`;
+    }
+
+    function formatLocalDate(tzOffsetSec) {
+      const now = new Date();
+      const local = new Date(now.getTime() + (now.getTimezoneOffset() * 60 + tzOffsetSec) * 1000);
+      const days   = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+      const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+      const h = String(local.getHours()).padStart(2, '0');
+      const m = String(local.getMinutes()).padStart(2, '0');
+      return `${days[local.getDay()]}, ${months[local.getMonth()]} ${local.getDate()}, ${local.getFullYear()} · ${h}:${m}`;
+    }
+
+    function capitalize(str) {
+      return str.charAt(0).toUpperCase() + str.slice(1);
+    }
+
+    function showError(msg) {
+      errorMsg.textContent = msg;
+      errorMsg.style.display = 'block';
+      weatherResult.style.display = 'none';
+    }
+
+    function clearError() {
+      errorMsg.textContent = '';
+      errorMsg.style.display = 'none';
+    }
+
+    async function fetchWeather(city) {
+      searchBtn.disabled = true;
+      searchBtn.textContent = 'Searching...';
+      clearError();
+
+      try {
+        const url = `${BASE_URL}?q=${encodeURIComponent(city)}&appid=${API_KEY}&units=metric&lang=en`;
+        const res  = await fetch(url);
+        const data = await res.json();
+
+        if (res.status === 404 || data.cod === '404') {
+          showError('City not found. Please check the spelling and try again.');
+          return;
+        }
+        if (!res.ok) {
+          showError('An unexpected error occurred. Please try again.');
+          return;
+        }
+
+        renderWeather(data);
+      } catch (_) {
+        showError('Network error. Please check your connection.');
+      } finally {
+        searchBtn.disabled = false;
+        searchBtn.textContent = 'Search';
+      }
+    }
+
+    function renderWeather(data) {
+      const { name, sys, weather, main, wind, visibility, timezone } = data;
+      const code = weather[0].id;
+
+      document.getElementById('city-name').textContent    = `${name}, ${sys.country}`;
+      document.getElementById('weather-desc').textContent = capitalize(weather[0].description);
+      document.getElementById('weather-date').textContent = formatLocalDate(timezone);
+      document.getElementById('temperature').textContent  = `${Math.round(main.temp)}°C`;
+      document.getElementById('feels-like').textContent   = `${Math.round(main.feels_like)}°C`;
+      document.getElementById('humidity').textContent     = `${main.humidity}%`;
+      document.getElementById('wind-speed').textContent   = `${wind.speed} m/s`;
+      document.getElementById('pressure').textContent     = `${main.pressure} hPa`;
+      document.getElementById('visibility').textContent   = `${(visibility / 1000).toFixed(1)} km`;
+      document.getElementById('sunrise-time').textContent = formatUnixTime(sys.sunrise, timezone);
+      document.getElementById('sunset-time').textContent  = formatUnixTime(sys.sunset, timezone);
+
+      const dew = main.temp - ((100 - main.humidity) / 5);
+      document.getElementById('dew-point').textContent = `${Math.round(dew)}°C`;
+
+      // UV index not available in /weather endpoint — show placeholder
+      document.getElementById('uv-value').textContent    = '--';
+      document.getElementById('uv-level').textContent    = 'Not available';
+      document.getElementById('uv-progress').style.width = '0%';
+
+      // Update weather icon
+      const iconEl = document.getElementById('weather-icon');
+      iconEl.setAttribute('data-lucide', getWeatherIcon(code));
+
+      weatherResult.style.display = 'flex';
+
+      // Re-render Lucide icons after DOM update
+      lucide.createIcons();
+    }
+
+    searchBtn.addEventListener('click', () => {
+      const city = cityInput.value.trim();
+      if (city) fetchWeather(city);
+    });
+
+    cityInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        const city = cityInput.value.trim();
+        if (city) fetchWeather(city);
+      }
+    });
+  </script>
+</body>
+</html>
