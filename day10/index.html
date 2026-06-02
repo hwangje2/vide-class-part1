@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -371,8 +371,8 @@
           <i data-lucide="sun"></i>
           <span>WeatherNow</span>
         </div>
-        <h1 class="hero-heading">Search Your Weather</h1>
-        <p class="hero-subtitle">Enter a city name to get real-time weather information</p>
+        <h1 class="hero-heading">날씨 검색</h1>
+        <p class="hero-subtitle">도시 이름을 입력하여 실시간 날씨 정보를 확인하세요</p>
         <div class="search-row">
           <div class="search-input-wrapper">
             <i data-lucide="search"></i>
@@ -380,11 +380,11 @@
               type="text"
               class="search-input"
               id="city-input"
-              placeholder="Enter city name..."
+              placeholder="도시 이름 입력..."
               autocomplete="off"
             />
           </div>
-          <button class="search-btn" id="search-btn">Search</button>
+          <button class="search-btn" id="search-btn">검색</button>
         </div>
         <p class="error-msg" id="error-msg"></p>
       </div>
@@ -411,28 +411,28 @@
         <div class="stats-row">
           <div class="stat-card">
             <i data-lucide="thermometer"></i>
-            <span class="stat-label">Feels Like</span>
+            <span class="stat-label">체감 온도</span>
             <span class="stat-value" id="feels-like"></span>
           </div>
           <div class="stat-card">
             <i data-lucide="droplets"></i>
-            <span class="stat-label">Humidity</span>
+            <span class="stat-label">습도</span>
             <span class="stat-value" id="humidity"></span>
           </div>
           <div class="stat-card">
             <i data-lucide="wind"></i>
-            <span class="stat-label">Wind</span>
+            <span class="stat-label">바람</span>
             <span class="stat-value" id="wind-speed"></span>
           </div>
           <div class="stat-card">
             <i data-lucide="gauge"></i>
-            <span class="stat-label">Pressure</span>
+            <span class="stat-label">기압</span>
             <span class="stat-value" id="pressure"></span>
           </div>
         </div>
 
         <!-- Details Title -->
-        <h2 class="details-title">Weather Details</h2>
+        <h2 class="details-title">날씨 상세 정보</h2>
 
         <!-- Bento Grid -->
         <div class="bento-grid">
@@ -441,11 +441,11 @@
             <div class="bento-card">
               <div class="bento-header">
                 <i data-lucide="sun"></i>
-                <span class="bento-label">UV Index</span>
+                <span class="bento-label">자외선 지수</span>
               </div>
               <div>
                 <div class="bento-value" id="uv-value">--</div>
-                <div class="uv-level" id="uv-level">Not available</div>
+                <div class="uv-level" id="uv-level">정보 없음</div>
               </div>
               <div class="progress-bar-bg">
                 <div class="progress-bar-fill" id="uv-progress"></div>
@@ -454,7 +454,7 @@
             <div class="bento-card">
               <div class="bento-header">
                 <i data-lucide="eye"></i>
-                <span class="bento-label">Visibility</span>
+                <span class="bento-label">가시거리</span>
               </div>
               <div class="bento-value" id="visibility"></div>
             </div>
@@ -465,25 +465,25 @@
             <div class="bento-card">
               <div class="bento-header">
                 <i data-lucide="sunrise"></i>
-                <span class="bento-label">Sunrise &amp; Sunset</span>
+                <span class="bento-label">일출 &amp; 일몰</span>
               </div>
               <div class="sun-times">
                 <div class="sun-item">
                   <i data-lucide="sunrise"></i>
                   <span class="sun-time" id="sunrise-time"></span>
-                  <span class="sun-label">Sunrise</span>
+                  <span class="sun-label">일출</span>
                 </div>
                 <div class="sun-item">
                   <i data-lucide="sunset"></i>
                   <span class="sun-time" id="sunset-time"></span>
-                  <span class="sun-label">Sunset</span>
+                  <span class="sun-label">일몰</span>
                 </div>
               </div>
             </div>
             <div class="bento-card">
               <div class="bento-header">
                 <i data-lucide="thermometer"></i>
-                <span class="bento-label">Dew Point</span>
+                <span class="bento-label">이슬점</span>
               </div>
               <div class="bento-value" id="dew-point"></div>
             </div>
@@ -493,7 +493,7 @@
 
       <!-- Footer -->
       <footer class="footer">
-        Powered by OpenWeatherMap API · © 2026 WeatherNow
+        OpenWeatherMap API 제공 · © 2026 WeatherNow
       </footer>
     </div>
   </div>
@@ -530,11 +530,10 @@
     function formatLocalDate(tzOffsetSec) {
       const now = new Date();
       const local = new Date(now.getTime() + (now.getTimezoneOffset() * 60 + tzOffsetSec) * 1000);
-      const days   = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
-      const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+      const days = ['일요일','월요일','화요일','수요일','목요일','금요일','토요일'];
       const h = String(local.getHours()).padStart(2, '0');
       const m = String(local.getMinutes()).padStart(2, '0');
-      return `${days[local.getDay()]}, ${months[local.getMonth()]} ${local.getDate()}, ${local.getFullYear()} · ${h}:${m}`;
+      return `${local.getFullYear()}년 ${local.getMonth() + 1}월 ${local.getDate()}일 ${days[local.getDay()]} · ${h}:${m}`;
     }
 
     function capitalize(str) {
@@ -554,29 +553,29 @@
 
     async function fetchWeather(city) {
       searchBtn.disabled = true;
-      searchBtn.textContent = 'Searching...';
+      searchBtn.textContent = '검색 중...';
       clearError();
 
       try {
-        const url = `${BASE_URL}?q=${encodeURIComponent(city)}&appid=${API_KEY}&units=metric&lang=en`;
+        const url = `${BASE_URL}?q=${encodeURIComponent(city)}&appid=${API_KEY}&units=metric&lang=kr`;
         const res  = await fetch(url);
         const data = await res.json();
 
         if (res.status === 404 || data.cod === '404') {
-          showError('City not found. Please check the spelling and try again.');
+          showError('도시를 찾을 수 없습니다. 철자를 확인하고 다시 시도해 주세요.');
           return;
         }
         if (!res.ok) {
-          showError('An unexpected error occurred. Please try again.');
+          showError('예기치 않은 오류가 발생했습니다. 다시 시도해 주세요.');
           return;
         }
 
         renderWeather(data);
       } catch (_) {
-        showError('Network error. Please check your connection.');
+        showError('네트워크 오류입니다. 인터넷 연결을 확인해 주세요.');
       } finally {
         searchBtn.disabled = false;
-        searchBtn.textContent = 'Search';
+        searchBtn.textContent = '검색';
       }
     }
 
@@ -601,7 +600,7 @@
 
       // UV index not available in /weather endpoint — show placeholder
       document.getElementById('uv-value').textContent    = '--';
-      document.getElementById('uv-level').textContent    = 'Not available';
+      document.getElementById('uv-level').textContent    = '정보 없음';
       document.getElementById('uv-progress').style.width = '0%';
 
       // Update weather icon
